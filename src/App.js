@@ -1,25 +1,47 @@
-import logo from './logo.svg';
+import React from 'react';
+import axios from 'axios';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(){
+    super()
+    this.state = {
+      userInput: "",
+      chars: []
+    }
+  }
+
+  handleInput = (e) => this.setState({
+    userInput: e.target.value
+  })
+
+  handleSearch = async () => {
+    const { data } = await axios.get(`https://swapi.dev/api/people/?search=${this.state.userInput || 'r2'}`);
+    this.setState({
+      chars: data.results
+    })
+  }
+
+  componentDidMount(){
+    this.handleSearch();
+  }
+
+  render(){
+    const { chars } = this.state;
+    return (
+      <div className="App">
+       <input onChange={this.handleInput}></input>
+       <button onClick={this.handleSearch}>Search</button>
+       <ul>
+         {chars.map(({ name }) => {
+           return (
+             <li>{name}</li>
+           )
+         })}
+       </ul>
+      </div>
+    );
+  }
 }
 
 export default App;
